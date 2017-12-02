@@ -36,7 +36,7 @@ program
 		(val, memo) => [...memo, val],
 		[]
 	)
-	.option("-m, --method []", "A method", "queryCar")
+	.option("-m, --method []", "A method", "queryAllCars")
 	.parse(process.argv);
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
@@ -83,10 +83,7 @@ Fabric_Client.newDefaultKeyValueStore({
 			if (query_responses[0] instanceof Error) {
 				console.error("error from query = ", query_responses[0]);
 			} else {
-				console.log(
-					"Response is \n",
-					JSON.stringify(JSON.parse(query_responses[0].toString()), null, 2)
-				);
+				console.log("Response is \n", query_responses[0].toString());
 			}
 		} else {
 			console.log("No payloads were returned from query");

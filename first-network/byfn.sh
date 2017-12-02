@@ -352,7 +352,7 @@ if [ "$MODE" == "up" ]; then
   EXPMODE="Restarting"
   elif [ "$MODE" == "generate" ]; then
   EXPMODE="Generating certs and genesis block for"
-else
+else  
   printHelp
   exit 1
 fi
