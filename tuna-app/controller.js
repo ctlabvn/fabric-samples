@@ -94,14 +94,9 @@ export default {
 	add_tuna(req, res) {
 		console.log("submit recording of a tuna catch: ");
 
-		var array = req.params.tuna.split("-");
-		console.log(array);
-
-		var key = array[0];
-		var timestamp = array[2];
-		var location = array[1];
-		var vessel = array[4];
-		var holder = array[3];
+		const array = req.params.tuna.split("-");
+		console.log(util.format("Get sent data: %j ", array));
+		const [key, location, timestamp, holder, vessel, weight] = array;
 
 		var fabric_client = new Fabric_Client();
 
@@ -126,7 +121,7 @@ export default {
 					//targets : --- letting this default to the peers assigned to the channel
 					chaincodeId: "tuna-app",
 					fcn: "recordTuna",
-					args: [key, vessel, location, timestamp, holder],
+					args: [key, vessel, location, timestamp, holder, weight],
 					chainId: "mychannel",
 					txId: tx_id
 				};
@@ -247,9 +242,9 @@ export default {
 
 				if (results && results[1] && results[1].event_status === "VALID") {
 					console.log(
-						"Successfully committed the change to the ledger by the peer"
+						"Successfully committed the change to the ledger by the peer: " +
+							tx_id.getTransactionID()
 					);
-					res.send(tx_id.getTransactionID());
 				} else {
 					console.log(
 						"Transaction failed to be committed to the ledger due to ::" +
@@ -450,7 +445,7 @@ export default {
 				// check the results in the order the promises were added to the promise all list
 				if (results && results[0] && results[0].status === "SUCCESS") {
 					console.log("Successfully sent transaction to the orderer.");
-					res.json(tx_id.getTransactionID());
+					res.send(tx_id.getTransactionID());
 				} else {
 					console.error(
 						"Failed to order the transaction. Error code: " + response.status
@@ -460,9 +455,9 @@ export default {
 
 				if (results && results[1] && results[1].event_status === "VALID") {
 					console.log(
-						"Successfully committed the change to the ledger by the peer"
+						"Successfully committed the change to the ledger by the peer: " +
+							tx_id.getTransactionID()
 					);
-					res.json(tx_id.getTransactionID());
 				} else {
 					console.log(
 						"Transaction failed to be committed to the ledger due to ::" +

@@ -81,6 +81,7 @@
           <th>Holder</th>
           <th>Catch Location <br>(Longitude, Latitude)</th>
           <th>Vessel</th>
+          <th>Weight</th>
         </tr>
 
         <tr ng-repeat="tuna in all_tuna">
@@ -89,6 +90,7 @@
           <td>{{tuna.holder}}</td>
           <td>{{tuna.location}}</td>
           <td>{{tuna.vessel}}</td>
+          <td>{{tuna.weight}}</td>
         </tr>
       </table>
 
@@ -107,6 +109,7 @@
           <th>Holder</th>
           <th>Catch Location <br>(Longitude, Latitude)</th>
           <th>Vessel</th>
+          <th>Weight</th>
         </tr>
 
         <tr>
@@ -114,6 +117,7 @@
           <td>{{query_tuna.holder}}</td>
           <td>{{query_tuna.location}}</td>
           <td>{{query_tuna.vessel}}</td>
+          <td>{{query_tuna.weight}}</td>
         </tr>
       </table>
 
@@ -127,6 +131,7 @@
         Enter latitude: <input id="createName" class="form-control" type="text" placeholder="Ex: 150.405" ng-model="tuna.latitude">
         Enter timestamp: <input class="form-control" type="text" placeholder="Ex: 4982342301" ng-model="tuna.timestamp">
         Enter name of holder: <input class="form-control" type="text" placeholder="Ex: Hansel" ng-model="tuna.holder">
+        Enter weight: <input class="form-control" placeholder="Ex: 100" ng-model="tuna.weight">
         <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="recordTuna()"> 
       </div>
 

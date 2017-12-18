@@ -5,15 +5,15 @@
 
  This code is based on code written by the Hyperledger Fabric community.
   Original code can be found here: https://github.com/hyperledger/fabric-samples/blob/release/chaincode/fabcar/fabcar.go
- */
+*/
 
 package main
 
-/* Imports  
-* 4 utility libraries for handling bytes, reading and writing JSON, 
-formatting, and string manipulation  
-* 2 specific Hyperledger Fabric specific libraries for Smart Contracts  
-*/ 
+/* Imports
+* 4 utility libraries for handling bytes, reading and writing JSON,
+formatting, and string manipulation
+* 2 specific Hyperledger Fabric specific libraries for Smart Contracts
+*/
 import (
 	"bytes"
 	"encoding/json"
@@ -28,22 +28,23 @@ import (
 type SmartContract struct {
 }
 
-/* Define Tuna structure, with 4 properties.  
+/* Define Tuna structure, with 4 properties.
 Structure tags are used by encoding/json library
 */
 type Tuna struct {
-	Vessel string `json:"vessel"`
+	Vessel    string `json:"vessel"`
 	Timestamp string `json:"timestamp"`
 	Location  string `json:"location"`
-	Holder  string `json:"holder"`
+	Holder    string `json:"holder"`
+	Weight    string `json:"weight"`
 }
 
 /*
  * The Init method *
  called when the Smart Contract "tuna-chaincode" is instantiated by the network
- * Best practice is to have any Ledger initialization in separate function 
+ * Best practice is to have any Ledger initialization in separate function
  -- see initLedger()
- */
+*/
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
@@ -52,7 +53,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
  * The Invoke method *
  called when an application requests to run the Smart Contract "tuna-chaincode"
  The app also specifies the specific smart contract function to call with args
- */
+*/
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 	// Retrieve the requested Smart Contract function and arguments
@@ -77,7 +78,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
  * The queryTuna method *
 Used to view the records of one particular tuna
 It takes one argument -- the key for the tuna in question
- */
+*/
 func (s *SmartContract) queryTuna(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 1 {
@@ -94,19 +95,19 @@ func (s *SmartContract) queryTuna(APIstub shim.ChaincodeStubInterface, args []st
 /*
  * The initLedger method *
 Will add test data (10 tuna catches)to our network
- */
+*/
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
 	tuna := []Tuna{
-		Tuna{Vessel: "923F", Location: "67.0006, -70.5476", Timestamp: "1504054225", Holder: "Miriam"},
-		Tuna{Vessel: "M83T", Location: "91.2395, -49.4594", Timestamp: "1504057825", Holder: "Dave"},
-		Tuna{Vessel: "T012", Location: "58.0148, 59.01391", Timestamp: "1493517025", Holder: "Igor"},
-		Tuna{Vessel: "P490", Location: "-45.0945, 0.7949", Timestamp: "1496105425", Holder: "Amalea"},
-		Tuna{Vessel: "S439", Location: "-107.6043, 19.5003", Timestamp: "1493512301", Holder: "Rafa"},
-		Tuna{Vessel: "J205", Location: "-155.2304, -15.8723", Timestamp: "1494117101", Holder: "Shen"},
-		Tuna{Vessel: "S22L", Location: "103.8842, 22.1277", Timestamp: "1496104301", Holder: "Leila"},
-		Tuna{Vessel: "EI89", Location: "-132.3207, -34.0983", Timestamp: "1485066691", Holder: "Yuan"},
-		Tuna{Vessel: "129R", Location: "153.0054, 12.6429", Timestamp: "1485153091", Holder: "Carlo"},
-		Tuna{Vessel: "49W4", Location: "51.9435, 8.2735", Timestamp: "1487745091", Holder: "Fatima"},
+		{Vessel: "923F", Location: "67.0006, -70.5476", Timestamp: "1504054225", Holder: "Miriam", Weight: "110"},
+		{Vessel: "M83T", Location: "91.2395, -49.4594", Timestamp: "1504057825", Holder: "Dave", Weight: "230"},
+		{Vessel: "T012", Location: "58.0148, 59.01391", Timestamp: "1493517025", Holder: "Igor", Weight: "210"},
+		{Vessel: "P490", Location: "-45.0945, 0.7949", Timestamp: "1496105425", Holder: "Amalea", Weight: "190"},
+		{Vessel: "S439", Location: "-107.6043, 19.5003", Timestamp: "1493512301", Holder: "Rafa", Weight: "180"},
+		{Vessel: "J205", Location: "-155.2304, -15.8723", Timestamp: "1494117101", Holder: "Shen", Weight: "170"},
+		{Vessel: "S22L", Location: "103.8842, 22.1277", Timestamp: "1496104301", Holder: "Leila", Weight: "160"},
+		{Vessel: "EI89", Location: "-132.3207, -34.0983", Timestamp: "1485066691", Holder: "Yuan", Weight: "150"},
+		{Vessel: "129R", Location: "153.0054, 12.6429", Timestamp: "1485153091", Holder: "Carlo", Weight: "140"},
+		{Vessel: "49W4", Location: "51.9435, 8.2735", Timestamp: "1487745091", Holder: "Fatima", Weight: "120"},
 	}
 
 	i := 0
@@ -123,16 +124,16 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 
 /*
  * The recordTuna method *
-Fisherman like Sarah would use to record each of her tuna catches. 
-This method takes in five arguments (attributes to be saved in the ledger). 
- */
+Fisherman like Sarah would use to record each of her tuna catches.
+This method takes in five arguments (attributes to be saved in the ledger).
+*/
 func (s *SmartContract) recordTuna(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments. Expecting 5")
+	if len(args) != 6 {
+		return shim.Error("Incorrect number of arguments. Expecting 6")
 	}
 
-	var tuna = Tuna{ Vessel: args[1], Location: args[2], Timestamp: args[3], Holder: args[4] }
+	var tuna = Tuna{Vessel: args[1], Location: args[2], Timestamp: args[3], Holder: args[4], Weight: args[5]}
 
 	tunaAsBytes, _ := json.Marshal(tuna)
 	err := APIstub.PutState(args[0], tunaAsBytes)
@@ -146,8 +147,8 @@ func (s *SmartContract) recordTuna(APIstub shim.ChaincodeStubInterface, args []s
 /*
  * The queryAllTuna method *
 allows for assessing all the records added to the ledger(all tuna catches)
-This method does not take any arguments. Returns JSON string containing results. 
- */
+This method does not take any arguments. Returns JSON string containing results.
+*/
 func (s *SmartContract) queryAllTuna(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 	startKey := "0"
@@ -193,9 +194,9 @@ func (s *SmartContract) queryAllTuna(APIstub shim.ChaincodeStubInterface) sc.Res
 
 /*
  * The changeTunaHolder method *
-The data in the world state can be updated with who has possession. 
-This function takes in 2 arguments, tuna id and new holder name. 
- */
+The data in the world state can be updated with who has possession.
+This function takes in 2 arguments, tuna id and new holder name.
+*/
 func (s *SmartContract) changeTunaHolder(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 2 {
@@ -224,9 +225,9 @@ func (s *SmartContract) changeTunaHolder(APIstub shim.ChaincodeStubInterface, ar
 
 /*
  * main function *
-calls the Start function 
+calls the Start function
 The main function starts the chaincode in the container during instantiation.
- */
+*/
 func main() {
 
 	// Create a new Smart Contract
