@@ -1,39 +1,51 @@
 {
-    "network-config": {	
-		"org1": {
-			"name": "peerOrg1",
-			"mspid": "Org1MSP",
-			"peer1": {
-				"requests": "grpcs://127.0.0.1:7051",
-				"events": "grpcs://127.0.0.1:7053",
-				"server-hostname": "peer0.org1.example.com",
-				"tls_cacerts": "/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
-			},			
-			"admin": {
-				"key": "/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
-				"cert": "/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
-			}
-		}		
-	},
-   "host":"localhost",
-   "port":"8080",
+   "network-config": {
+      "org1": {
+         "name": "peerOrg1",
+         "mspid": "Org1MSP",
+         "peer1": {
+            "requests": "grpc://127.0.0.1:7051",
+            "events": "grpc://127.0.0.1:7053",
+            "server-hostname": "peer0.org1.example.com",
+            "tls_cacerts":
+               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+         },
+         "admin": {
+            "key":
+               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
+            "cert":
+               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+         }
+      },
+      "orderer": {
+         "orderer1": {
+            "url": "grpc://localhost:7050",
+            "server-hostname": "peer0.org1.example.com",
+            "tls_cacerts":
+               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+         }
+      }
+   },
+   "host": "localhost",
+   "port": "8080",
    "channel": "mychannel",
-   "GOPATH":"../artifacts",
-   "keyValueStore":"/tmp/fabric-client-kvs",
-   "eventWaitTime":"30000",
-   "peer":"peer1",
-   "org":["org1"],
-   "users":[
+   "GOPATH": "/Users/thanhtu/go-workspace",
+   "keyValueStore": "/tmp/fabric-client-kvs",
+   "eventWaitTime": "30000",
+   "peer": "peer1",
+   "org": ["org1"],
+   "enableTls": false,
+   "users": [
       {
-         "username":"admin",
-         "secret":"adminpw"
+         "username": "admin",
+         "secret": "adminpw"
       }
    ],
-   "mysql":{
-      "host":"127.0.0.1",
-      "port":"3306",
-      "database":"fabricexplorer",
-      "username":"root",
-      "passwd":"123456"
+   "mysql": {
+      "host": "127.0.0.1",
+      "port": "3306",
+      "database": "fabricexplorer",
+      "username": "root",
+      "passwd": "123456"
    }
 }

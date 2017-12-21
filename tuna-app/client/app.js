@@ -67,9 +67,18 @@ app.factory("appFactory", function($http) {
 	var factory = {};
 
 	factory.queryAllTuna = function(callback) {
-		$http.get("/get_all_tuna/").success(function(output) {
-			callback(output);
-		});
+		$http
+			.get(
+				"http://localhost:8080/apis/channels/mychannel/chaincodes/tuna-app?peer=peer1&fcn=queryAllTuna&args=[%22%22]"
+			)
+			.success(function(output) {
+				var json = JSON.parse(String.fromCharCode.apply(null, output[0].data));
+				callback(json);
+			});
+
+		// $http.get("/get_all_tuna/").success(function(output) {
+		// 	callback(output);
+		// });
 	};
 
 	factory.queryTuna = function(id, callback) {

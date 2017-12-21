@@ -13,22 +13,22 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-'use strict';
-var log4js = require('log4js');
-var logger = log4js.getLogger('Helper');
-logger.setLevel('INFO');
+"use strict";
+var log4js = require("log4js");
+var logger = log4js.getLogger("Helper");
+logger.setLevel("INFO");
 
-var path = require('path');
-var util = require('util');
-var fs = require('fs-extra');
-var User = require('fabric-client/lib/User.js');
-var crypto = require('crypto');
-var FabricCAService = require('fabric-ca-client');
-var config = require('../config.json');
-var hfc = require('fabric-client');
-hfc.addConfigFile(path.join(__dirname, '../config.json'));
+var path = require("path");
+var util = require("util");
+var fs = require("fs-extra");
+var User = require("fabric-client/lib/User.js");
+var crypto = require("crypto");
+var FabricCAService = require("fabric-ca-client");
+var config = require("../config.json");
+var hfc = require("fabric-client");
+hfc.addConfigFile(path.join(__dirname, "../config.json"));
 hfc.setLogger(logger);
-var ORGS = hfc.getConfigSetting('network-config');
+var ORGS = hfc.getConfigSetting("network-config");
 
 var clients = {};
 var channels = {};
@@ -36,57 +36,59 @@ var caClients = {};
 
 // set up the client and channel objects for each org
 
-function createDefault (channelName){
-	console.log("default-----"+channelName);
+function createDefault(channelName) {
+	console.log("default-----" + channelName);
 	for (let key in ORGS) {
-		if (key.indexOf('org') === 0) {
-			let client = new hfc();	
+		if (key.indexOf("org") === 0) {
+			let client = new hfc();
 			let cryptoSuite = hfc.newCryptoSuite();
-			cryptoSuite.setCryptoKeyStore(hfc.newCryptoKeyStore({path: getKeyStoreForOrg(ORGS[key].name)}));
+			cryptoSuite.setCryptoKeyStore(
+				hfc.newCryptoKeyStore({ path: getKeyStoreForOrg(ORGS[key].name) })
+			);
 			client.setCryptoSuite(cryptoSuite);
 			channels[key] = {};
 			let channel = client.newChannel(channelName);
 			clients[key] = client;
 			channels[key][channelName] = channel;
 			setupPeers(channel, key, client);
+
+			// add orderer service, should be fixed
+			setupOrderer(client, channel);
 		}
-	}	
+	}
 }
 
 function setupPeers(channel, org, client) {
 	for (let key in ORGS[org]) {
-		if (key.indexOf('peer') === 0) {
-            let peer
-			let data = fs.readFileSync(path.join(__dirname,"../", ORGS[org][key]['tls_cacerts']));
-			peer = client.newPeer(
-				ORGS[org][key].requests,
-				{
+		if (key.indexOf("peer") === 0) {
+			let peer;
+			if (config.enableTls) {
+				let data = fs.readFileSync(ORGS[org][key]["tls_cacerts"]);
+				peer = client.newPeer(ORGS[org][key].requests, {
 					pem: Buffer.from(data).toString(),
-					'ssl-target-name-override': ORGS[org][key]['server-hostname']
-				}
-			);
+					"ssl-target-name-override": ORGS[org][key]["server-hostname"]
+				});
+			} else {
+				peer = client.newPeer(ORGS[org][key].requests);
+			}
+
 			channel.addPeer(peer);
 		}
 	}
 }
 
-function newOrderer(client, channel) {
-	for (let index in ORGS['orderer']) {
-        let newOrderer
-		//if(config.enableTls){
-            let data = fs.readFileSync(path.join(__dirname,"../", ORGS.orderer[index]['tls_cacerts']));
-            newOrderer = client.newOrderer(
-                ORGS.orderer[index].url,
-                {
-                    pem: Buffer.from(data).toString(),
-                    'ssl-target-name-override': ORGS.orderer[index]['server-hostname']
-                }
-            );
-		/*}else{
-			newOrderer = client.newOrderer(
-				ORGS.orderer[index].url
-			);
-		}*/
+function setupOrderer(client, channel) {
+	for (let index in ORGS.orderer) {
+		let newOrderer;
+		if (config.enableTls) {
+			let data = fs.readFileSync(ORGS.orderer[index]["tls_cacerts"]);
+			newOrderer = client.newOrderer(ORGS.orderer[index].url, {
+				pem: Buffer.from(data).toString(),
+				"ssl-target-name-override": ORGS.orderer[index]["server-hostname"]
+			});
+		} else {
+			newOrderer = client.newOrderer(ORGS.orderer[index].url);
+		}
 		channel.addOrderer(newOrderer);
 	}
 }
@@ -94,8 +96,8 @@ function newOrderer(client, channel) {
 function readAllFiles(dir) {
 	var files = fs.readdirSync(dir);
 	var certs = [];
-	files.forEach((file_name) => {
-		let file_path = path.join(dir,file_name);
+	files.forEach(file_name => {
+		let file_path = path.join(dir, file_name);
 		let data = fs.readFileSync(file_path);
 		certs.push(data);
 	});
@@ -107,19 +109,18 @@ function getOrgName(org) {
 }
 
 function getKeyStoreForOrg(org) {
-	return config.keyValueStore + '_' + org;
+	return config.keyValueStore + "_" + org;
 }
 
 function newRemotes(urls, forPeers, userOrg, channelName) {
 	var targets = [];
 	// find the peer that match the urls
-	outer:
-	for (let index in urls) {
+	outer: for (let index in urls) {
 		let peerUrl = urls[index];
 
 		let found = false;
 		for (let key in ORGS) {
-			if (key.indexOf('org') === 0) {
+			if (key.indexOf("org") === 0) {
 				// if looking for event hubs, an app can only connect to
 				// event hubs in its own org
 				if (!forPeers && key !== userOrg) {
@@ -130,32 +131,34 @@ function newRemotes(urls, forPeers, userOrg, channelName) {
 				let client = getClientForOrg(key);
 
 				for (let prop in org) {
-					if (prop.indexOf('peer') === 0) {
-						if (org[prop]['requests'].indexOf(peerUrl) >= 0) {
+					if (prop.indexOf("peer") === 0) {
+						if (org[prop]["requests"].indexOf(peerUrl) >= 0) {
 							// found a peer matching the subject url
 							if (forPeers) {
-								//if(config.enableTls){
-                                    let data = fs.readFileSync(path.join(__dirname,"../", org[prop]['tls_cacerts']));
-                                    targets.push(client.newPeer('grpcs://' + peerUrl, {
-                                        pem: Buffer.from(data).toString(),
-                                        'ssl-target-name-override': org[prop]['server-hostname']
-                                    }));
-								/*}else{
-									targets.push(client.newPeer('grpc://' + peerUrl));
-								}*/
+								if (config.enableTls) {
+									let data = fs.readFileSync(org[prop]["tls_cacerts"]);
+									targets.push(
+										client.newPeer("grpcs://" + peerUrl, {
+											pem: Buffer.from(data).toString(),
+											"ssl-target-name-override": org[prop]["server-hostname"]
+										})
+									);
+								} else {
+									targets.push(client.newPeer("grpc://" + peerUrl));
+								}
 
 								continue outer;
 							} else {
 								let eh = client.newEventHub();
-								//if(config.enableTls){
-                                    let data = fs.readFileSync(path.join(__dirname,"../", org[prop]['tls_cacerts']));
-                                    eh.setPeerAddr(org[prop]['events'], {
-                                        pem: Buffer.from(data).toString(),
-                                        'ssl-target-name-override': org[prop]['server-hostname']
-                                    });
-								/*}else{
-									eh.setPeerAddr(org[prop]['events']);
-								}*/
+								if (config.enableTls) {
+									let data = fs.readFileSync(org[prop]["tls_cacerts"]);
+									eh.setPeerAddr(org[prop]["events"], {
+										pem: Buffer.from(data).toString(),
+										"ssl-target-name-override": org[prop]["server-hostname"]
+									});
+								} else {
+									eh.setPeerAddr(org[prop]["events"]);
+								}
 								targets.push(eh);
 
 								continue outer;
@@ -167,7 +170,9 @@ function newRemotes(urls, forPeers, userOrg, channelName) {
 		}
 
 		if (!found) {
-			logger.error(util.format('Failed to find a peer matching the url %s', peerUrl));
+			logger.error(
+				util.format("Failed to find a peer matching the url %s", peerUrl)
+			);
 		}
 	}
 
@@ -178,25 +183,24 @@ function newRemotes(urls, forPeers, userOrg, channelName) {
 // APIs
 //-------------------------------------//
 var getChannelForOrg = function(org, channelName) {
-   if(channels[org][channelName] == undefined)
-		createDefault(channelName);
-   return channels[org][channelName];
+	if (channels[org][channelName] == undefined) createDefault(channelName);
+	return channels[org][channelName];
 };
 
 var getClientForOrg = function(org) {
 	return clients[org];
 };
 
-var newPeers = function(urls,channelName) {
-	return newRemotes(urls, true,'',channelName);
+var newPeers = function(urls, channelName) {
+	return newRemotes(urls, true, "", channelName);
 };
 
-var newEventHubs = function(urls, org,channelName) {
-	return newRemotes(urls, false, org,channelName);
+var newEventHubs = function(urls, org, channelName) {
+	return newRemotes(urls, false, org, channelName);
 };
 
 var getMspID = function(org) {
-	logger.debug('Msp ID : ' + ORGS[org].mspid);
+	logger.debug("Msp ID : " + ORGS[org].mspid);
 	return ORGS[org].mspid;
 };
 
@@ -313,70 +317,92 @@ var getRegisteredUsers = function(username, userOrg, isJson) {
 
 var getOrgAdmin = function(userOrg) {
 	var admin = ORGS[userOrg].admin;
-	var keyPath = path.join(__dirname,"../",admin.key);
+	var keyPath = admin.key;
 	var keyPEM = Buffer.from(readAllFiles(keyPath)[0]).toString();
-	var certPath = path.join(__dirname,"../",admin.cert);
+	var certPath = admin.cert;
 	var certPEM = readAllFiles(certPath)[0].toString();
 
 	var client = getClientForOrg(userOrg);
 	var cryptoSuite = hfc.newCryptoSuite();
 	if (userOrg) {
-		cryptoSuite.setCryptoKeyStore(hfc.newCryptoKeyStore({path: getKeyStoreForOrg(getOrgName(userOrg))}));
+		cryptoSuite.setCryptoKeyStore(
+			hfc.newCryptoKeyStore({ path: getKeyStoreForOrg(getOrgName(userOrg)) })
+		);
 		client.setCryptoSuite(cryptoSuite);
 	}
 
-	return hfc.newDefaultKeyValueStore({
-		path: getKeyStoreForOrg(getOrgName(userOrg))
-	}).then((store) => {
-		client.setStateStore(store);
-
-		return client.createUser({
-			username: 'peer'+userOrg+'Admin',
-			mspid: getMspID(userOrg),
-			cryptoContent: {
-				privateKeyPEM: keyPEM,
-				signedCertPEM: certPEM
-			}
+	return hfc
+		.newDefaultKeyValueStore({
+			path: getKeyStoreForOrg(getOrgName(userOrg))
+		})
+		.then(store => {
+			client.setStateStore(store);
+			var username = "peer" + userOrg + "Admin";
+			return client.getUserContext(username, true).then(user => {
+				if (user && user.isEnrolled()) {
+					return user;
+				} else {
+					return client.createUser({
+						username,
+						mspid: getMspID(userOrg),
+						cryptoContent: {
+							privateKeyPEM: keyPEM,
+							signedCertPEM: certPEM
+						}
+					});
+				}
+			});
 		});
-	});
 };
 
 var setupChaincodeDeploy = function() {
-	process.env.GOPATH = path.join(__dirname, config.GOPATH);
+	process.env.GOPATH = config.GOPATH;
 };
 
 var getLogger = function(moduleName) {
 	var logger = log4js.getLogger(moduleName);
-	logger.setLevel('INFO');
+	logger.setLevel("INFO");
 	return logger;
 };
 
 var getPeerAddressByName = function(org, peer) {
 	var address = ORGS[org][peer].requests;
-	//if(config.enableTls){
-        return address.split('grpcs://')[1];
-	/*}
-	return address.split('grpc://')[1];*/
+	if (config.enableTls) {
+		return address.split("grpcs://")[1];
+	}
+	return address.split("grpc://")[1];
 };
 
-var getOrgs=function(){
-	let orgList=[]
-    for (let key in ORGS) {
-        if (key.indexOf('org') === 0) {
-			orgList.push(key)
-        }
-    }
-    return orgList
-}
+var setEventHub = function(org, peer, eh) {
+	if (config.enableTls) {
+		let data = fs.readFileSync(ORGS[org][peer]["tls_cacerts"]);
+		eh.setPeerAddr(ORGS[org][peer]["events"], {
+			pem: Buffer.from(data).toString(),
+			"ssl-target-name-override": ORGS[org][peer]["server-hostname"]
+		});
+	} else {
+		eh.setPeerAddr(ORGS[org][peer]["events"]);
+	}
+};
 
-var getPeersByOrg = function (org) {
-    let peerList = []
-    for (let key in ORGS[org]) {
-        if (key.indexOf('peer') === 0) {
-            peerList.push(key);
-        }
-    }
-    return peerList;
+var getOrgs = function() {
+	let orgList = [];
+	for (let key in ORGS) {
+		if (key.indexOf("org") === 0) {
+			orgList.push(key);
+		}
+	}
+	return orgList;
+};
+
+var getPeersByOrg = function(org) {
+	let peerList = [];
+	for (let key in ORGS[org]) {
+		if (key.indexOf("peer") === 0) {
+			peerList.push(key);
+		}
+	}
+	return peerList;
 };
 
 exports.getChannelForOrg = getChannelForOrg;
@@ -391,6 +417,7 @@ exports.getPeerAddressByName = getPeerAddressByName;
 //exports.getRegisteredUsers = getRegisteredUsers;
 exports.getOrgAdmin = getOrgAdmin;
 //exports.getAdminUser=getAdminUser;
-exports.getOrgs=getOrgs;
-exports.getPeersByOrg=getPeersByOrg;
-exports.createDefault=createDefault;
+exports.getOrgs = getOrgs;
+exports.getPeersByOrg = getPeersByOrg;
+exports.createDefault = createDefault;
+exports.setEventHub = setEventHub;

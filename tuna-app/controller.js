@@ -376,7 +376,7 @@ export default {
 					// report a TIMEOUT status
 					var transaction_id_string = tx_id.getTransactionID(); //Get the transaction ID string to be used by the event processing
 					var promises = [];
-
+					console.log(request, channel);
 					var sendPromise = channel.sendTransaction(request);
 					promises.push(sendPromise); //we want the send transaction first, so that we know where to check status
 
