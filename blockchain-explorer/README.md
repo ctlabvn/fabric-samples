@@ -243,7 +243,7 @@ curl -s -X POST \
 	http://localhost:8080/apis/channels/:channelName/chaincodes/:chaincodeName \
 	-H "content-type: application/json" \
 	-d '{
-	"peers": ["127.0.0.1:7051", "127.0.0.1:8051"],
+	"peers": ["peer1", "peer2"],
 	"fcn":"put",
 	"args":["org1","putsomerandomvalue-org1"]
 }'
@@ -254,7 +254,7 @@ curl -s -X POST \
 	http://localhost:8080/apis/channels/mychannel1/chaincodes/mycc \
 	-H "content-type: application/json" \
 	-d '{
-	"peers": ["127.0.0.1:7051", "127.0.0.1:8051"],
+	"peers": ["peer1", "peer2"],
 	"fcn":"put",
 	"args":["org1","putsomerandomvalue-org1"]
 }'
@@ -304,7 +304,7 @@ curl -s -X POST \
   http://localhost:8080/apis/chaincodes \
   -H "content-type: application/json" \
   -d '{
-	"peers": ["127.0.0.1:7051","127.0.0.1:8051"],
+	"peers": ["peer1", "peer2"],
 	"chaincodeName":"mycc",
 	"chaincodePath":"github.com/uniqueKeyValue",
 	"chaincodeVersion":"v0"
@@ -319,7 +319,7 @@ curl -s -X POST \
   http://localhost:8080/apis/channels/:channelName/peers \
   -H "content-type: application/json" \
   -d '{
-	"peers": ["127.0.0.1:7051","127.0.0.1:8051"]
+	"peers": ["peer1", "peer2"],
 }'
 
 example:
@@ -328,7 +328,7 @@ curl -s -X POST \
   http://localhost:8080/apis/channels/mychannel1/peers \
   -H "content-type: application/json" \
   -d '{
-	"peers": ["127.0.0.1:7051","127.0.0.1:8051"]
+	"peers": ["peer1", "peer2"],
 }'
 
 ```
