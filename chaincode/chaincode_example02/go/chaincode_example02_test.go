@@ -7,8 +7,8 @@ import (
   "testing"
 )
 
-func checkInit(t *testing.T, stub *shim.MockStub, args [][]byte) {
-  res := stub.MockInit("1", args)
+func checkInit(t *testing.T, stub *shim.MockStub, args []string) {
+  res := stub.MockInit("1", su.StringArgsToBytesArgs(args))
   if res.Status != shim.OK {
     fmt.Println("Init failed", string(res.Message))
     t.FailNow()
@@ -56,7 +56,7 @@ func checkInvoke(t *testing.T, stub *shim.MockStub, args []string) {
 func Test_Init(t *testing.T) {
   scc := new(SimpleChaincode)
   stub := shim.NewMockStub("ex02", scc)
-  checkInit(t, stub, su.StringArgsToBytesArgs([]string{"init", "A", "123", "B", "234"}))
+  checkInit(t, stub, []string{"init", "A", "123", "B", "234"})
 
   checkState(t, stub, "A", "123")
   checkState(t, stub, "B", "234")
@@ -65,7 +65,7 @@ func Test_Init(t *testing.T) {
 func Test_Query(t *testing.T) {
   scc := new(SimpleChaincode)
   stub := shim.NewMockStub("ex02", scc)
-  checkInit(t, stub, su.StringArgsToBytesArgs([]string{"init", "A", "345", "B", "456"}))
+  checkInit(t, stub, []string{"init", "A", "345", "B", "456"})
 
   checkQuery(t, stub, "A", "345")
   checkQuery(t, stub, "B", "456")
@@ -74,7 +74,7 @@ func Test_Query(t *testing.T) {
 func Test_Invoke(t *testing.T) {
   scc := new(SimpleChaincode)
   stub := shim.NewMockStub("ex02", scc)
-  checkInit(t, stub, su.StringArgsToBytesArgs([]string{"init", "A", "567", "B", "678"}))
+  checkInit(t, stub, []string{"init", "A", "567", "B", "678"})
 
   checkInvoke(t, stub, []string{"invoke", "A", "B", "123"})
   checkQuery(t, stub, "A", "444")
