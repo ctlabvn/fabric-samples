@@ -37,7 +37,7 @@ func checkInvoke(t *testing.T, scc *SimpleChaincode, stub *shim.MockStub, args [
   }
 }
 
-func TestExample03_Init(t *testing.T) {
+func Test_Init(t *testing.T) {
   scc := new(SimpleChaincode)
   stub := shim.NewMockStub("ex03", scc)
 
@@ -47,7 +47,7 @@ func TestExample03_Init(t *testing.T) {
   checkState(t, stub, "A", "123")
 }
 
-func TestExample03_Invoke(t *testing.T) {
+func Test_Invoke(t *testing.T) {
   scc := new(SimpleChaincode)
   stub := shim.NewMockStub("ex03", scc)
 
