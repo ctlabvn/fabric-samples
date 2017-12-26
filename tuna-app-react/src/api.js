@@ -1,5 +1,6 @@
 // base url from fabric explorer
-const API_BASE = `http://${window.location.host}:8080`;
+const API_BASE = `${window.location.protocol}://${window.location
+  .hostname}:8080`;
 const DEFAULT_CHANNEL = "mychannel";
 const DEFAULT_PEER = "peer1";
 const DEFAULT_CHAINCODE = "tuna-app";
