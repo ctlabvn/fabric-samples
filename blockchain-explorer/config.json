@@ -8,13 +8,13 @@
             "events": "grpc://127.0.0.1:7053",
             "server-hostname": "peer0.org1.example.com",
             "tls_cacerts":
-               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+               "../basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
          },
          "admin": {
             "key":
-               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
+               "../basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
             "cert":
-               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+               "../basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
          }
       },
       "orderer": {
@@ -22,7 +22,7 @@
             "url": "grpc://localhost:7050",
             "server-hostname": "peer0.org1.example.com",
             "tls_cacerts":
-               "/Users/thanhtu/MyProjects/Hyperledger/Fabric/basic-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+               "../basic-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
          }
       }
    },
