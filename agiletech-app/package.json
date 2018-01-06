@@ -10,7 +10,8 @@
         "commander": "^2.11.0",
         "fabric-ca-client": "unstable",
         "fabric-client": "unstable",
-        "grpc": "^1.7.2"
+        "grpc": "^1.7.2",
+        "x509": "^0.3.3"
     },
     "author": "Anthony O'Dowd",
     "license": "Apache-2.0",

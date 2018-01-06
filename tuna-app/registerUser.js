@@ -26,6 +26,8 @@ var member_user = null;
 var store_path = path.join(__dirname, "hfc-key-store");
 console.log(" Store path:" + store_path);
 
+var userEnroll = "user8";
+
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
 Fabric_Client.newDefaultKeyValueStore({
   path: store_path
@@ -45,9 +47,11 @@ Fabric_Client.newDefaultKeyValueStore({
     };
     // be sure to change the http to https when the CA is running TLS enabled
     fabric_ca_client = new Fabric_CA_Client(
-      "http://localhost:7054",
-      null,
-      "",
+      "https://localhost:7054",
+      // null,
+      // "",
+      tlsOptions,
+      "ca.example.com",
       crypto_suite
     );
 
@@ -65,7 +69,13 @@ Fabric_Client.newDefaultKeyValueStore({
     // at this point we should have the admin user
     // first need to register the user with the CA server
     return fabric_ca_client.register(
-      { enrollmentID: "user1", affiliation: "org1.department1" },
+      {
+        enrollmentID: userEnroll,
+        enrollmentSecret: "userpw",
+        affiliation: "org1.department1",
+        role: "client",
+        attrs: [{ name: "permission", value: "read,write" }]
+      },
       admin_user
     );
   })
@@ -74,14 +84,18 @@ Fabric_Client.newDefaultKeyValueStore({
     console.log("Successfully registered user1 - secret:" + secret);
 
     return fabric_ca_client.enroll({
-      enrollmentID: "user1",
+      enrollmentID: userEnroll,
       enrollmentSecret: secret
     });
   })
   .then(enrollment => {
-    console.log('Successfully enrolled member user "user1" ');
+    console.log(
+      "Successfully enrolled member user userEnroll ",
+      enrollment.enrollmentCert
+    );
+
     return fabric_client.createUser({
-      username: "user1",
+      username: userEnroll,
       mspid: "Org1MSP",
       cryptoContent: {
         privateKeyPEM: enrollment.key.toBytes(),
@@ -91,12 +105,14 @@ Fabric_Client.newDefaultKeyValueStore({
   })
   .then(user => {
     member_user = user;
-
+    fabric_client.saveUserToStateStore();
     return fabric_client.setUserContext(member_user);
   })
-  .then(() => {
+  .then(user_from_store => {
     console.log(
-      "User1 was successfully registered and enrolled and is ready to intreact with the fabric network"
+      userEnroll +
+        " was successfully registered and enrolled and is ready to intreact with the fabric network",
+      user_from_store
     );
   })
   .catch(err => {

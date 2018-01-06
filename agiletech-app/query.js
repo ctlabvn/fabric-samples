@@ -7,7 +7,7 @@
 /*
  * Chaincode query
  */
-
+const fs = require("fs-extra");
 var Fabric_Client = require("fabric-client");
 var path = require("path");
 var util = require("util");
@@ -18,8 +18,15 @@ var program = require("commander");
 var fabric_client = new Fabric_Client();
 
 // setup the fabric network
-var channel = fabric_client.newChannel("agiletechchannel");
-var peer = fabric_client.newPeer("grpc://localhost:7051");
+var channel = fabric_client.newChannel("mychannel");
+let data = fs.readFileSync(
+	"/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+);
+var peer = fabric_client.newPeer("grpcs://localhost:7051", {
+	pem: Buffer.from(data).toString(),
+	"ssl-target-name-override": "peer0.org1.example.com"
+});
+// var peer = fabric_client.newPeer("grpcs://localhost:7051");
 channel.addPeer(peer);
 
 //
@@ -36,7 +43,8 @@ program
 		(val, memo) => [...memo, val],
 		[]
 	)
-	.option("-m, --method []", "A method", "queryAllCars")
+	.option("-m, --method []", "A method", "queryAllTuna")
+	.option("-c, --chaincode []", "A chaincode", "tuna-app")
 	.parse(process.argv);
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
@@ -54,7 +62,7 @@ Fabric_Client.newDefaultKeyValueStore({
 		fabric_client.setCryptoSuite(crypto_suite);
 
 		// get the enrolled user from persistence, this user will sign all requests
-		return fabric_client.getUserContext("admin", true);
+		return fabric_client.getUserContext("user1", true);
 	})
 	.then(user_from_store => {
 		if (user_from_store && user_from_store.isEnrolled()) {
@@ -68,7 +76,7 @@ Fabric_Client.newDefaultKeyValueStore({
 		// queryAllCars chaincode function - requires no arguments , ex: args: [''],
 		const request = {
 			//targets : --- letting this default to the peers assigned to the channel
-			chaincodeId: "mycc",
+			chaincodeId: program.chaincode,
 			fcn: program.method,
 			args: program.arg
 		};

@@ -15,16 +15,17 @@ export default ({ tunas }) => (
       </tr>
     </thead>
     <tbody>
-      {tunas.map(({ Key, Record: tuna }) => (
-        <tr key={Key}>
-          <td>{Key}</td>
-          <td>{tuna.timestamp}</td>
-          <td>{tuna.holder}</td>
-          <td>{tuna.location}</td>
-          <td>{tuna.vessel}</td>
-          <td>{tuna.weight}</td>
-        </tr>
-      ))}
+      {tunas.map &&
+        tunas.map(({ Key, Record: tuna }) => (
+          <tr key={Key}>
+            <td>{Key}</td>
+            <td>{tuna.timestamp}</td>
+            <td>{tuna.holder}</td>
+            <td>{tuna.location}</td>
+            <td>{tuna.vessel}</td>
+            <td>{tuna.weight}</td>
+          </tr>
+        ))}
     </tbody>
   </table>
 );

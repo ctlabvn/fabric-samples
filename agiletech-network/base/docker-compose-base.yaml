@@ -9,7 +9,7 @@ services:
 
   orderer.agiletech.vn:
     container_name: orderer.agiletech.vn
-    image: hyperledger/fabric-orderer
+    image: hyperledger/fabric-orderer:x86_64-1.0.5
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0

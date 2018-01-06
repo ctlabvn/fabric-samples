@@ -331,6 +331,8 @@ var getOrgAdmin = function(userOrg) {
 		client.setCryptoSuite(cryptoSuite);
 	}
 
+	// console.log(getKeyStoreForOrg(getOrgName(userOrg)));
+
 	return hfc
 		.newDefaultKeyValueStore({
 			path: getKeyStoreForOrg(getOrgName(userOrg))

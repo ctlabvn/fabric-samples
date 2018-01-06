@@ -17,6 +17,15 @@ class App extends Component {
   }
 
   queryAllTuna = () => {
+    [
+      "getCreator",
+      // "getBinding",
+      "getSignedProposal"
+      // "getTransient"
+    ].forEach(cert =>
+      query(cert, [], "mychannel", "shim-api").then(ret => console.log(ret))
+    );
+
     query("queryAllTuna", []).then(tunas => this.setState({ tunas }));
   };
 

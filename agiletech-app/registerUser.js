@@ -21,7 +21,13 @@ var fabric_ca_client = null;
 var admin_user = null;
 var member_user = null;
 var store_path = path.join(__dirname, "hfc-key-store");
-console.log(" Store path:" + store_path);
+// console.log(" Store path:" + store_path);
+var program = require("commander");
+
+program
+  .version("0.1.0")
+  .option("-u, --user []", "User id", "user1")
+  .parse(process.argv);
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
 Fabric_Client.newDefaultKeyValueStore({
@@ -43,8 +49,8 @@ Fabric_Client.newDefaultKeyValueStore({
     // be sure to change the http to https when the CA is running TLS enabled
     fabric_ca_client = new Fabric_CA_Client(
       "https://localhost:7054",
-      null,
-      "",
+      tlsOptions,
+      "ca.example.com",
       crypto_suite
     );
 
@@ -63,9 +69,10 @@ Fabric_Client.newDefaultKeyValueStore({
     // first need to register the user with the CA server
     return fabric_ca_client.register(
       {
-        enrollmentID: "user1",
+        enrollmentID: program.user,
         affiliation: "org1.department1",
-        role: "client"
+        role: "client",
+        attrs: [{ name: "permission", value: "read,write" }]
       },
       admin_user
     );
@@ -75,14 +82,16 @@ Fabric_Client.newDefaultKeyValueStore({
     console.log("Successfully registered user1 - secret:" + secret);
 
     return fabric_ca_client.enroll({
-      enrollmentID: "user1",
-      enrollmentSecret: secret
+      enrollmentID: program.user,
+      enrollmentSecret: secret,
+      maxEnrollments: -1,
+      attr_reqs: [{ name: "permission", optional: true }]
     });
   })
   .then(enrollment => {
-    console.log('Successfully enrolled member user "user1" ');
+    console.log("Successfully enrolled member user: " + program.user);
     return fabric_client.createUser({
-      username: "user1",
+      username: program.user,
       mspid: "Org1MSP",
       cryptoContent: {
         privateKeyPEM: enrollment.key.toBytes(),
@@ -97,7 +106,8 @@ Fabric_Client.newDefaultKeyValueStore({
   })
   .then(() => {
     console.log(
-      "User1 was successfully registered and enrolled and is ready to intreact with the fabric network"
+      program.user +
+        " was successfully registered and enrolled and is ready to intreact with the fabric network"
     );
   })
   .catch(err => {

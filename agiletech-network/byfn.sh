@@ -315,13 +315,14 @@ function generateChannelArtifacts() {
 OS_ARCH=$(echo "$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')" | awk '{print tolower($0)}')
 # timeout duration - the duration the CLI should wait for a response from
 # another container before giving up
-CLI_TIMEOUT=10000
+CLI_TIMEOUT=20000
 #default for delay
 CLI_DELAY=3
 # channel name defaults to "agiletechchannel"
-CHANNEL_NAME="agiletechchannel"
+CHANNEL_NAME="mychannel"
 # use this as the default docker-compose yaml definition
-COMPOSE_FILE=docker-compose-cli.yaml
+# COMPOSE_FILE=docker-compose-cli.yaml
+COMPOSE_FILE=docker-compose-e2e.yaml
 #
 COMPOSE_FILE_COUCH=docker-compose-couch.yaml
 # use golang as the default language for chaincode

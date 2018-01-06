@@ -1,28 +1,35 @@
 {
    "network-config": {
       "org1": {
-         "name": "peerOrg1",
+         "name": "org1",
          "mspid": "Org1MSP",
          "peer1": {
-            "requests": "grpc://127.0.0.1:7051",
-            "events": "grpc://127.0.0.1:7053",
-            "server-hostname": "peer0.org1.example.com",
+            "requests": "grpcs://127.0.0.1:7051",
+            "events": "grpcs://127.0.0.1:7053",
+            "server-hostname": "peer0",
             "tls_cacerts":
-               "../basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+               "/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+         },
+         "peer2": {
+            "requests": "grpcs://127.0.0.1:8051",
+            "events": "grpcs://127.0.0.1:8053",
+            "server-hostname": "peer1",
+            "tls_cacerts":
+               "/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt"
          },
          "admin": {
             "key":
-               "../basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
+               "/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
             "cert":
-               "../basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+               "/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
          }
       },
       "orderer": {
          "orderer1": {
-            "url": "grpc://localhost:7050",
-            "server-hostname": "peer0.org1.example.com",
+            "url": "grpcs://localhost:7050",
+            "server-hostname": "orderer",
             "tls_cacerts":
-               "../basic-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+               "/Users/thanhtu/MyProjects/Hyperledger/fabric-sdk-rest/tests/basic-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
          }
       }
    },
@@ -34,7 +41,7 @@
    "eventWaitTime": "30000",
    "peer": "peer1",
    "org": ["org1"],
-   "enableTls": false,
+   "enableTls": true,
    "users": [
       {
          "username": "admin",

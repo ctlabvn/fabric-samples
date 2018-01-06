@@ -1,0 +1,21 @@
+[ req ] 
+distinguished_name = req_distinguished_name 
+attributes = req_attributes 
+req_extensions = v3_req
+prompt = no 
+
+[ req_distinguished_name ] 
+CN = sf23607 
+
+[ req_attributes ]
+
+[ cert_ext ] 
+subjectKeyIdentifier=hash 
+keyUsage=critical,digitalSignature,keyEncipherment 
+extendedKeyUsage=clientAuth,serverAuth
+
+[v3_req]
+subjectKeyIdentifier=hash 
+keyUsage=critical,digitalSignature,keyEncipherment 
+extendedKeyUsage=clientAuth,serverAuth
+1.2.3.4.5.6.7.8.1=ASN1:UTF8String:key=value

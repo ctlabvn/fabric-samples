@@ -44,7 +44,7 @@ Fabric_Client.newDefaultKeyValueStore({
     fabric_ca_client = new Fabric_CA_Client(
       "https://localhost:7054",
       tlsOptions,
-      "ca_peerOrg1",
+      "ca.example.com",
       crypto_suite
     );
 
@@ -61,7 +61,8 @@ Fabric_Client.newDefaultKeyValueStore({
       return fabric_ca_client
         .enroll({
           enrollmentID: "admin",
-          enrollmentSecret: "adminpw"
+          enrollmentSecret: "adminpw",
+          attr_reqs: [{ name: "permission", optional: true }]
         })
         .then(enrollment => {
           console.log('Successfully enrolled admin user "admin"');
